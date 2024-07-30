@@ -1,40 +1,115 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage });
 
-// MongoDB connection
+// Connect to MongoDB
 mongoose.connect('mongodb+srv://daspriyosmita2003:Taehyung@aikya.brjaaza.mongodb.net/?retryWrites=true&w=majority&appName=AIkya', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useUnifiedTopology: true
 });
 
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
+// Define schemas
+const profileSchema = new mongoose.Schema({
+  name: String,
+  about: String,
+  experience: String,
+  certifications: String,
+  skills: String,
+  profilePicture: String
 });
 
+const projectSchema = new mongoose.Schema({
+  name: String,
+  website: String,
+  type: String,
+  industry: String,
+  details: String,
+  images: String
+});
 
-// Import routes
-const profileRoutes = require('./routes/profile');
-const projectRoutes = require('./routes/project');
+const Profile = mongoose.model('Profile', profileSchema);
+const Project = mongoose.model('Project', projectSchema);
 
+// Profile routes
+app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
+  try {
+    const { name, about, experience, certifications, skills } = req.body;
+    const profilePicture = req.file ? req.file.path : req.body.profilePicture;
 
-app.use('/api/profile', profileRoutes);
-app.use('/api/project', projectRoutes);
+    const profile = await Profile.findOneAndUpdate({}, {
+      name, about, experience, certifications, skills, profilePicture
+    }, { upsert: true, new: true });
 
+    res.status(201).send(profile);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.get('/api/profile', async (req, res) => {
+  try {
+    const profile = await Profile.findOne({});
+    res.send(profile);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+// Project routes
+app.post('/api/project', upload.single('images'), async (req, res) => {
+  try {
+    const { name, website, type, industry, details } = req.body;
+    const images = req.file ? req.file.path : req.body.images;
+
+    const project = new Project({ name, website, type, industry, details, images });
+    await project.save();
+    res.status(201).send(project);
+  } catch (error) {
+    console.error('Error Saving Project:', error);
+    res.status(400).send(error);
+  }
+});
+
+app.get('/api/projects', async (req, res) => {
+  try {
+    const projects = await Project.find({});
+    res.send(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.delete('/api/project/:id', async (req, res) => {
+  try {
+    await Project.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+// Serve static files
+app.use('/uploads', express.static('uploads'));
+
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
