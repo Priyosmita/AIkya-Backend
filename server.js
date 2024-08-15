@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://daspriyosmita2003:Taehyung@aikya.brjaaza.mongodb.net/?retryWrites=true&w=majority&appName=AIkya', {
+mongoose.connect('mongodb+srv://Rijuraj:Riju4929!@aikya.htvianz.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
