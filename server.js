@@ -62,7 +62,7 @@ const Project = mongoose.model('Project', projectSchema);
 // Profile routes
 app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
   try {
-    const {name, about, experience, certifications, skills} = req.body;
+    const { name, about, experience, certifications, skills } = req.body;
     const profilePicture = req.file ? req.file.path : req.body.profilePicture;
 
     const profile = await Profile.findOneAndUpdate({}, {
@@ -87,10 +87,10 @@ app.get('/api/profile', async (req, res) => {
 // Project routes
 app.post('/api/project', upload.single('images'), async (req, res) => {
   try {
-    const { name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk,equityOffered, debtAmount} = req.body;
+    const { name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk, equityOffered, debtAmount } = req.body;
     const images = req.file ? req.file.path : req.body.images;
 
-    const project = new Project({ name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk,equityOffered, debtAmount, images });
+    const project = new Project({ name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk, equityOffered, debtAmount, images });
     await project.save();
     res.status(201).send(project);
   } catch (error) {
@@ -105,6 +105,28 @@ app.get('/api/projects', async (req, res) => {
     res.send(projects);
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+// PUT route to update a project
+app.put('/api/project/:id', upload.single('images'), async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const { name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk, equityOffered, debtAmount } = req.body;
+    const images = req.file ? req.file.path : req.body.images;
+
+    const updatedProject = await Project.findByIdAndUpdate(projectId, {
+      name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk, equityOffered, debtAmount, images
+    }, { new: true });
+
+    if (!updatedProject) {
+      return res.status(404).send('Project not found');
+    }
+
+    res.send(updatedProject);
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res.status(500).send('Server error');
   }
 });
 
