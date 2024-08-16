@@ -43,15 +43,16 @@ const projectSchema = new mongoose.Schema({
   type: String,
   industry: String,
   details: String,
-  started: Date,
-  yearly: Number,
-  monthly: Number,
-  gross: Number,
-  net: Number,
+  startedIn: String,
+  yearlyRevenue: Number,
+  monthlySales: Number,
+  grossMargin: Number,
+  netMargin: Number,
   ebitda: Number,
-  sku: Number,
-  funding: Number,
-  debt: Boolean,
+  skus: Number,
+  originalAsk: Number,
+  equityOffered: Number,
+  debtAmount: Number,
   images: String
 });
 
@@ -86,10 +87,10 @@ app.get('/api/profile', async (req, res) => {
 // Project routes
 app.post('/api/project', upload.single('images'), async (req, res) => {
   try {
-    const { name, website, type, industry, details, started, yearly, monthly, gross, net, ebitda, sku, funding, debt} = req.body;
+    const { name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk,equityOffered, debtAmount} = req.body;
     const images = req.file ? req.file.path : req.body.images;
 
-    const project = new Project({ name, website, type, industry, details, started, yearly, monthly, gross, net, ebitda, sku, funding, debt, images });
+    const project = new Project({ name, website, type, industry, details, startedIn, yearlyRevenue, monthlySales, grossMargin, netMargin, ebitda, skus, originalAsk,equityOffered, debtAmount, images });
     await project.save();
     res.status(201).send(project);
   } catch (error) {
