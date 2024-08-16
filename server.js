@@ -29,12 +29,12 @@ mongoose.connect('mongodb+srv://Rijuraj:Riju4929!@aikya.htvianz.mongodb.net/', {
 
 // Define schemas
 const profileSchema = new mongoose.Schema({
+  profilePicture: String,
   name: String,
   about: String,
   experience: String,
   certifications: String,
-  skills: String,
-  profilePicture: String
+  skills: [String],
 });
 
 const projectSchema = new mongoose.Schema({
