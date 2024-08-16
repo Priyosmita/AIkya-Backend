@@ -33,7 +33,7 @@ const profileSchema = new mongoose.Schema({
   name: String,
   about: String,
   experience: String,
-  certifications: String,
+  certifications: [String],
   skills: [String],
 });
 
@@ -43,6 +43,15 @@ const projectSchema = new mongoose.Schema({
   type: String,
   industry: String,
   details: String,
+  started: Date,
+  yearly: Number,
+  monthly: Number,
+  gross: Number,
+  net: Number,
+  ebitda: Number,
+  sku: Number,
+  funding: Number,
+  debt: Boolean,
   images: String
 });
 
@@ -52,7 +61,7 @@ const Project = mongoose.model('Project', projectSchema);
 // Profile routes
 app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
   try {
-    const { name, about, experience, certifications, skills } = req.body;
+    const {name, about, experience, certifications, skills} = req.body;
     const profilePicture = req.file ? req.file.path : req.body.profilePicture;
 
     const profile = await Profile.findOneAndUpdate({}, {
@@ -77,10 +86,10 @@ app.get('/api/profile', async (req, res) => {
 // Project routes
 app.post('/api/project', upload.single('images'), async (req, res) => {
   try {
-    const { name, website, type, industry, details } = req.body;
+    const { name, website, type, industry, details, started, yearly, monthly, gross, net, ebitda, sku, funding, debt} = req.body;
     const images = req.file ? req.file.path : req.body.images;
 
-    const project = new Project({ name, website, type, industry, details, images });
+    const project = new Project({ name, website, type, industry, details, started, yearly, monthly, gross, net, ebitda, sku, funding, debt, images });
     await project.save();
     res.status(201).send(project);
   } catch (error) {
