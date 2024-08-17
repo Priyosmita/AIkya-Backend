@@ -70,7 +70,7 @@ const Project = mongoose.model('Project', projectSchema);
 app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
   try {
     const { name, about, experience, certifications, skills } = req.body;
-    const profilePicture = req.file ? req.file.path : req.body.profilePicture;
+    const profilePicture = req.file ? req.file.path.replace('uploads/', '') : req.body.profilePicture;
 
     const profile = await Profile.findOneAndUpdate({}, {
       name, about, experience, certifications, skills, profilePicture
@@ -81,6 +81,7 @@ app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
     res.status(400).send(error);
   }
 });
+
 
 app.get('/api/profile', async (req, res) => {
   try {
