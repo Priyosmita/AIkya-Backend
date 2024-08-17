@@ -21,6 +21,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+const uploadMultiple = multer({
+  storage,
+}).fields([
+  { name: 'profilePicture', maxCount: 1 },
+  { name: 'certifications[]', maxCount: 10 } // Adjust as needed
+]);
+
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://Rijuraj:Riju4929!@aikya.htvianz.mongodb.net/', {
   useNewUrlParser: true,

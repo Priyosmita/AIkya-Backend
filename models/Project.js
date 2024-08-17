@@ -1,13 +1,23 @@
-// db for user projects
 const mongoose = require('mongoose');
 
-const ProjectSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+const projectSchema = new mongoose.Schema({
+  name: String,
   website: String,
   type: String,
   industry: String,
   details: String,
-  images: String,
+  startedIn: String,
+  yearlyRevenue: Number,
+  monthlySales: Number,
+  grossMargin: Number,
+  netMargin: Number,
+  ebitda: Number,
+  skus: Number,
+  originalAsk: Number,
+  equityOffered: Number,
+  debtAmount: Number,
+  images: String
 });
 
-module.exports = mongoose.model('Project', ProjectSchema);
+const Project = mongoose.model('Project', projectSchema);
+module.exports = Project;

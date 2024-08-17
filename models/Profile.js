@@ -1,16 +1,13 @@
-// all schemas are present in models
-
-// db for user profile
 const mongoose = require('mongoose');
 
-const ProfileSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+const profileSchema = new mongoose.Schema({
+  profilePicture: String,
+  name: String,
   about: String,
   experience: String,
-  certifications: String,
-  skills: String,
-  profilePicture: String,
-  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
+  certifications: [String],
+  skills: [String],
 });
 
-module.exports = mongoose.model('Profile', ProfileSchema);
+const Profile = mongoose.model('Profile', profileSchema);
+module.exports = Profile;
