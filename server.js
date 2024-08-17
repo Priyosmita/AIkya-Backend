@@ -72,15 +72,30 @@ app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
     const { name, about, experience, certifications, skills } = req.body;
     const profilePicture = req.file ? req.file.path.replace('uploads/', '') : req.body.profilePicture;
 
+    // Parse skills as JSON if it's a string
+    const parsedSkills = Array.isArray(JSON.parse(skills)) ? JSON.parse(skills) : [];
+
+    // Parse certifications if needed
+    const parsedCertifications = certifications ? JSON.parse(certifications) : [];
+
+    // Update or create the profile
     const profile = await Profile.findOneAndUpdate({}, {
-      name, about, experience, certifications, skills, profilePicture
+      name,
+      about,
+      experience,
+      certifications: parsedCertifications,
+      skills: parsedSkills, // Ensure skills are saved as an array
+      profilePicture
     }, { upsert: true, new: true });
 
     res.status(201).send(profile);
   } catch (error) {
-    res.status(400).send(error);
+    console.error(error);
+    res.status(400).send({ error: 'Failed to update profile' });
   }
 });
+
+
 
 
 app.get('/api/profile', async (req, res) => {
