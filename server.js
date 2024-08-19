@@ -100,12 +100,20 @@ app.post('/api/profile', upload.single('profilePicture'), async (req, res) => {
 
 app.get('/api/profile', async (req, res) => {
   try {
-    const profile = await Profile.findOne({});
+    const { userId } = req.query;
+    if (!userId) {
+      return res.status(400).send({ error: 'userId query parameter is required' });
+    }
+    const profile = await Profile.findOne({ userId });
+    if (!profile) {
+      return res.status(404).send({ error: 'Profile not found' });
+    }
     res.send(profile);
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
 
 // Project routes
 app.post('/api/project', upload.single('images'), async (req, res) => {
